@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification - Gmail Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="otp-card">
+            <div class="login-header">
+                <i class="fas fa-envelope-circle-check"></i>
+                <h1>Verify Your Email</h1>
+                <p>We've sent a 6-digit code to your Gmail</p>
+            </div>
+            
+            <div class="otp-content">
+                <div id="message-container"></div>
+                
+                <h2>Enter Verification Code</h2>
+                <p>Please check your email and enter the 6-digit code we sent you.</p>
+                
+                <form class="otp-form" id="otpForm">
+                    <div class="otp-input-group">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="off">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="off">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="verifyBtn">
+                        <span class="btn-text">Verify & Login</span>
+                        <span class="spinner" style="display: none;"></span>
+                    </button>
+                    
+                    <button type="button" class="btn btn-secondary" id="resendBtn" onclick="resendOTP()">
+                        <i class="fas fa-paper-plane"></i>
+                        Resend Code
+                    </button>
+                    
+                    <div class="countdown" id="countdown"></div>
+                </form>
+                
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-clock"></i>
+                        <span>Code expires in 10 minutes</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure one-time verification</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p>Didn't receive the code? Check your spam folder or click resend.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="verify-otp.js"></script>
+</body>
+</html>
