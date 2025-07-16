@@ -75,20 +75,30 @@ const db = new sqlite3.Database('./users.db', (err) => {
 });
 
 // Email transporter setup
-const transporter = nodemailer.createTransporter({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
+let transporter = null;
+
+// Only create transporter if credentials are provided
+if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD && 
+    process.env.GMAIL_USER !== 'your-email@gmail.com') {
+  transporter = nodemailer.createTransporter({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD
+    }
+  });
+} else {
+  console.log('⚠️  Gmail credentials not configured. Email sending will be simulated.');
+}
 
 // Passport Google Strategy
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
-}, async (accessToken, refreshToken, profile, done) => {
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && 
+    process.env.GOOGLE_CLIENT_ID !== 'your-google-client-id') {
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/auth/google/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails[0].value;
     const googleId = profile.id;
@@ -119,7 +129,10 @@ passport.use(new GoogleStrategy({
   } catch (error) {
     return done(error);
   }
-}));
+  }));
+} else {
+  console.log('⚠️  Google OAuth credentials not configured. Google login will not work.');
+}
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -139,9 +152,15 @@ app.get('/', (req, res) => {
 });
 
 // Google OAuth routes
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+app.get('/auth/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID === 'your-google-client-id') {
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Google OAuth not configured. Please set up GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env file.' 
+    });
+  }
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
@@ -181,24 +200,29 @@ app.post('/send-otp', loginLimiter, async (req, res) => {
 
         // Send OTP email
         try {
-          await transporter.sendMail({
-            from: process.env.GMAIL_USER,
-            to: email,
-            subject: 'Your Login OTP',
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #333;">Login Verification</h2>
-                <p>Your One-Time Password (OTP) for login is:</p>
-                <div style="background-color: #f4f4f4; padding: 20px; text-align: center; margin: 20px 0;">
-                  <h1 style="color: #007bff; margin: 0; font-size: 36px; letter-spacing: 5px;">${otp}</h1>
+          if (transporter) {
+            await transporter.sendMail({
+              from: process.env.GMAIL_USER,
+              to: email,
+              subject: 'Your Login OTP',
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #333;">Login Verification</h2>
+                  <p>Your One-Time Password (OTP) for login is:</p>
+                  <div style="background-color: #f4f4f4; padding: 20px; text-align: center; margin: 20px 0;">
+                    <h1 style="color: #007bff; margin: 0; font-size: 36px; letter-spacing: 5px;">${otp}</h1>
+                  </div>
+                  <p>This OTP will expire in 10 minutes.</p>
+                  <p style="color: #666;">If you didn't request this, please ignore this email.</p>
                 </div>
-                <p>This OTP will expire in 10 minutes.</p>
-                <p style="color: #666;">If you didn't request this, please ignore this email.</p>
-              </div>
-            `
-          });
-          
-          res.json({ success: true, message: 'OTP sent to your email' });
+              `
+            });
+            res.json({ success: true, message: 'OTP sent to your email' });
+          } else {
+            // Simulate email sending for demo purposes
+            console.log(`📧 Demo Mode - OTP for ${email}: ${otp}`);
+            res.json({ success: true, message: 'OTP sent to your email (Demo Mode: Check console for OTP)' });
+          }
         } catch (emailError) {
           console.error('Error sending email:', emailError);
           res.status(500).json({ success: false, message: 'Error sending OTP email' });
