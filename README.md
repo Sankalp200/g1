@@ -69,12 +69,20 @@ frontend-backend-roadmap/
   - User status (active/inactive)
   - Search and filtering
 
+- **Payment Integration (Razorpay)**
+  - Multiple subscription plans (Basic, Premium, Enterprise)
+  - Secure payment processing
+  - Payment history and tracking
+  - Subscription management
+  - Automatic payment verification
+
 - **Security Features**
   - Password hashing with bcrypt
   - JWT token authentication
   - Rate limiting
   - Input validation
   - CORS protection
+  - Secure payment processing
 
 ## 📋 Prerequisites
 
@@ -177,6 +185,17 @@ The application will be available at:
 | GET | `/api/dashboard/activity` | Get recent activity |
 | GET | `/api/dashboard/analytics` | Get user analytics |
 | GET | `/api/dashboard/health` | Get system health |
+
+### Payment Endpoints (Razorpay)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/payments/plans` | Get available subscription plans |
+| POST | `/api/payments/create-order` | Create Razorpay payment order |
+| POST | `/api/payments/verify` | Verify payment signature |
+| GET | `/api/payments/history` | Get user payment history |
+| GET | `/api/payments/:id` | Get specific payment details |
+| POST | `/api/payments/webhook` | Razorpay webhook endpoint |
 
 ## 🎨 Default User Roles
 

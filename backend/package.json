@@ -22,7 +22,7 @@
     "helmet": "^6.0.0",
     "express-rate-limit": "^6.6.0",
     "morgan": "^1.10.0",
-    "stripe": "^12.14.0"
+    "razorpay": "^2.9.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",

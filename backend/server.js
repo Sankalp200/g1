@@ -10,6 +10,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
+const paymentRoutes = require('./routes/payments');
 
 // Initialize Express app
 const app = express();
@@ -51,6 +52,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/roadmap_a
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

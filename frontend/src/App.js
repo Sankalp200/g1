@@ -10,6 +10,8 @@ import Dashboard from './components/Dashboard/Dashboard';
 import UserManagement from './components/User/UserManagement';
 import Profile from './components/User/Profile';
 import Settings from './components/Settings/Settings';
+import PaymentPlans from './components/Payments/PaymentPlans';
+import PaymentHistory from './components/Payments/PaymentHistory';
 
 // Context
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -44,6 +46,14 @@ function AppContent() {
         <Route 
           path="/settings" 
           element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/plans" 
+          element={isAuthenticated ? <PaymentPlans /> : <Navigate to="/login" />} 
+        />
+        <Route 
+          path="/payments" 
+          element={isAuthenticated ? <PaymentHistory /> : <Navigate to="/login" />} 
         />
         <Route 
           path="/" 
